@@ -37,7 +37,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends pwgen openssl p
 RUN set -ex; \
 	key='A4A9406876FCBD3C456770C88C718D3B5072E1F5'; \
 	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+	apt-key adv --recv-key --keyserver ha.pool.sks-keyservers.net $key; \
+	#gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	gpg --export "$key" > /etc/apt/trusted.gpg.d/mysql.gpg; \
 	rm -r "$GNUPGHOME"; \
 	apt-key list > /dev/null
