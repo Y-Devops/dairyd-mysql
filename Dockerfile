@@ -1,6 +1,6 @@
 FROM dairyd/debian:jessie
 
-ENV REFRESHED_AT 2018-07-01
+ENV REFRESHED_AT 2018-07-25
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
