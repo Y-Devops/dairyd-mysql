@@ -1,4 +1,5 @@
 FROM dairyd/debian:jessie
+MAINTAINER Leo Luduena <lleo@linux.com>
 
 ENV REFRESHED_AT 2018-07-30
 
