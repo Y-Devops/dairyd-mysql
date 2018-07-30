@@ -1,6 +1,6 @@
 FROM dairyd/debian:jessie
 
-ENV REFRESHED_AT 2018-07-25
+ENV REFRESHED_AT 2018-07-30
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
@@ -44,7 +44,7 @@ RUN set -ex; \
 	apt-key list > /dev/null
 
 ENV MYSQL_MAJOR 5.7
-ENV MYSQL_VERSION 5.7.22-1debian8
+ENV MYSQL_VERSION 5.7.23-1debian8
 ENV DEBIAN_FRONTEND=noninteractive
 
 # mysql:
