@@ -61,7 +61,7 @@ RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /
 		echo mysql-community-server mysql-community-server/re-root-pass password ''; \
 		echo mysql-community-server mysql-community-server/remove-test-db select false; \
 	} | debconf-set-selections \
-	&& apt-get update && apt-cache madison mysql-community-server && apt-get install -y mysql-community-server && rm -rf /var/lib/apt/lists/* \
+	&& apt-get update && apt-cache madison mysql-server && apt-get install -y mysql-server && rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
 	&& chmod 777 /var/run/mysqld \
