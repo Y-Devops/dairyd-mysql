@@ -18,7 +18,9 @@ RUN set -x \
 	&& rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
 	&& gosu nobody true \
-	&& apt-get purge -y --auto-remove ca-certificates wget
+	&& apt-get purge -y --auto-remove ca-certificates wget \
+	&& mkdir ~/.gnupg \
+        && echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf
 
 RUN mkdir /docker-entrypoint-initdb.d
 
