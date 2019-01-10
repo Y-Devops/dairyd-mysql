@@ -1,4 +1,4 @@
-FROM dairyd/debian:strech
+FROM dairyd/debian:stretch
 
 ENV REFRESHED_AT 2018-12-17
 
