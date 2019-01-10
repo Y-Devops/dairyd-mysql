@@ -12,35 +12,37 @@ RUN set -x \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+	&& gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
 	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
+	&& gpgconf --kill all \
+	&& rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
 	&& gosu nobody true \
 	&& apt-get purge -y --auto-remove ca-certificates wget
 
 RUN mkdir /docker-entrypoint-initdb.d
 
-# pwgen: for MYSQL_RANDOM_ROOT_PASSWORD
-# openssl: for mysql_ssl_rsa_setup
-# perl:
-## FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
-## File::Basename
-## File::Copy
-## Sys::Hostname
-## Data::Dumper
+RUN apt-get update && apt-get install -y --no-install-recommends \
+# for MYSQL_RANDOM_ROOT_PASSWORD
+		pwgen \
+# for mysql_ssl_rsa_setup
+		openssl \
+# FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
+# File::Basename
+# File::Copy
+# Sys::Hostname
+# Data::Dumper
+		perl \
+	&& rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y --no-install-recommends pwgen openssl perl \
-	  && rm -rf /var/lib/apt/lists/*
-
-# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
 RUN set -ex; \
+# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
 	key='A4A9406876FCBD3C456770C88C718D3B5072E1F5'; \
 	export GNUPGHOME="$(mktemp -d)"; \
-	apt-key adv --recv-key --keyserver ha.pool.sks-keyservers.net $key; \
-	#gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
-	gpg --export "$key" > /etc/apt/trusted.gpg.d/mysql.gpg; \
-	rm -r "$GNUPGHOME"; \
+	gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+	gpg --batch --export "$key" > /etc/apt/trusted.gpg.d/mysql.gpg; \
+	gpgconf --kill all; \
+	rm -rf "$GNUPGHOME"; \
 	apt-key list > /dev/null
 
 ENV MYSQL_MAJOR 5.7
@@ -53,7 +55,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ## ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
 ## comment out a few problematic configuration values
 ## don't reverse lookup hostnames, they are usually another container
-RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list \
+RUN echo "deb http://repo.mysql.com/apt/debian/ stretch mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8C718D3B5072E1F5 \
     && { \
 		echo mysql-community-server mysql-community-server/data-dir select ''; \
@@ -61,7 +63,7 @@ RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /
 		echo mysql-community-server mysql-community-server/re-root-pass password ''; \
 		echo mysql-community-server mysql-community-server/remove-test-db select false; \
 	} | debconf-set-selections \
-	&& apt-get update && apt-cache madison mysql-server && apt-get install -y mysql-server && rm -rf /var/lib/apt/lists/* \
+	&& apt-get update && apt-get install -y mysql-server="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
 	&& chmod 777 /var/run/mysqld \
