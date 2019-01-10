@@ -55,7 +55,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ## ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
 ## comment out a few problematic configuration values
 ## don't reverse lookup hostnames, they are usually another container
-RUN echo "deb http://repo.mysql.com/apt/debian/ stretch mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
+RUN echo "deb http://repo.mysql.com/apt/debian/ stretch mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8C718D3B5072E1F5 \
     && { \
 		echo mysql-community-server mysql-community-server/data-dir select ''; \
