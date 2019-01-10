@@ -1,4 +1,4 @@
-FROM dairyd/debian:jessie
+FROM dairyd/debian:strech
 
 ENV REFRESHED_AT 2018-12-17
 
