@@ -1,6 +1,6 @@
 FROM dairyd/debian:stretch
 
-ENV REFRESHED_AT 2019-01-10
+ENV REFRESHED_AT 2019-07-01
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
