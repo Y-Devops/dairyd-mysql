@@ -2,7 +2,7 @@ FROM dairyd/debian:stretch
 
 LABEL maintainer="7of9@ydevops.com"
 
-ENV REFRESHED_AT 2019-08-10
+ENV REFRESHED_AT 2019-08-12
 
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
@@ -24,7 +24,7 @@ RUN set -x \
               hkp://keyserver.ubuntu.com:80 \
               pgp.mit.edu; do \
     	      gpg --keyserver "$server" --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 && break || echo "Trying new server..." \
-	   done \ 
+	&& done \ 
 	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
 	&& gpgconf --kill all \
 	&& rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
